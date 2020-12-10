@@ -1,0 +1,64 @@
+// Copyright ViveStudios. All Rights Reserved.
+#pragma once
+#include "/Engine/Public/Platform.ush"
+
+//-----------------------------------------------------------------------------
+
+uniform float K1;
+uniform float K2;
+uniform float P1;
+uniform float P2;
+uniform float K3;
+uniform float2 NormalizedPrincipalPoint;
+
+//-----------------------------------------------------------------------------
+
+struct InputVS
+{
+    float4 Position : ATTRIBUTE0;
+    float2 UV       : ATTRIBUTE1;
+};
+
+struct OutputVS
+{
+    float4 Position : SV_Position;
+    float4 UV       : TEXCOORD0;
+};
+
+struct OutputPS
+{
+    half4 Color : SV_Target0;
+};
+
+//-----------------------------------------------------------------------------
+
+OutputVS MainVS( InputVS In )
+{
+    OutputVS Out;
+    Out.Position = float4( In.Position.xy * 2.0f - 1.0f, 0.0f, 1.0f );
+    Out.UV = float4( In.UV, 0.0f, 1.0f );
+
+    return Out;
+}
+
+OutputPS MainPS( OutputVS In )
+{
+    OutputPS Out;
+
+    float ppx = NormalizedPrincipalPoint.x;
+    float ppy = NormalizedPrincipalPoint.y;
+
+    float uvx = In.UV.x;
+    float uvy = In.UV.y;
+
+    float cx = (uvx - ppx);
+    float cy = (uvy - ppy);
+
+    float r = sqrt( cx * cx + cy * cy );
+
+    half x = uvx + cx * (K1 * pow(r, 2.0f) + K2 * pow(r, 4.0f) + K3 * pow(r, 6.0f));
+    half y = uvy + cy * (K1 * pow(r, 2.0f) + K2 * pow(r, 4.0f) + K3 * pow(r, 6.0f));
+
+    Out.Color = half4( x, y, 0.0f, 1.0f );
+    return Out;
+}
