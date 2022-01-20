@@ -272,19 +272,17 @@ uint32 UViveOpenCVDriver::FWorkerRunnable::Run()
         FViveVideoConfiguration newVideoConfig;
 
         // Step 1: Initialize.
-        {
+        if ( Driver->SwitchToNextVideoSource ) {
             FScopeLock lock( &Driver->VideoSourceLock );
-            if ( Driver->SwitchToNextVideoSource ) {
-                if ( currentVideoSource != nullptr )
-                    currentVideoSource->Disconnect();
+            if ( currentVideoSource != nullptr )
+                currentVideoSource->Disconnect();
 
-                newVideoConfig = Driver->NextVideoConfig;
-                VIVELOG( Log, TEXT( "#### Switching video source to [%s] ####" ), *(newVideoConfig.Identifier) );
+            newVideoConfig = Driver->NextVideoConfig;
+            VIVELOG( Log, TEXT( "#### Switching video source to [%s] ####" ), *(newVideoConfig.Identifier) );
 
-                currentVideoSource = Driver->VideoSourceInstance;
-                Driver->SwitchToNextVideoSource = false;
-                newOpenVideoSource = true;
-            }
+            currentVideoSource = Driver->VideoSourceInstance;
+            Driver->SwitchToNextVideoSource = false;
+            newOpenVideoSource = true;
         }
 
         if ( newOpenVideoSource ) {

@@ -2,6 +2,7 @@
 #pragma once
 #include "Core.h"
 #include "Engine.h"
+#include "Rendering/Texture2DResource.h"
 #include "Misc/Paths.h"
 #include "Interfaces/IPluginManager.h"
 #include "ShaderCore.h"

@@ -83,7 +83,7 @@ void UViveVideoDriver::WriteFrameToTexture()
         [this]( FRHICommandListImmediate& InRHICmdList ){
             if (  TextureUpdateParam.Texture2DResource != nullptr 
                && TextureUpdateParam.Texture2DResource->GetCurrentFirstMip() <= 0 
-               && TextureUpdateParam.Texture2DResource->GetTexture2DRHI().IsValid() ){
+               && TextureUpdateParam.Texture2DResource->GetTexture2DRHI() != nullptr ){
                 // 새로운 Capture frame image가 있다면 texure에 다시 그린다.
                 auto driver = TextureUpdateParam.Driver;
                 if ( driver != nullptr && driver->IsNewFrameAvailable() ) {

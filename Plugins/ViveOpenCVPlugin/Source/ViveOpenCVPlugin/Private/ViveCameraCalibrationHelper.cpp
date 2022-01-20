@@ -95,24 +95,21 @@ void UViveCameraCalibrationHelper::GenerateDistortionCorrectionMap( float InFoca
         }
     }
 
-    auto srcResX = CameraCalibInfo->GetResolutionWidth();
-    auto srcResY = CameraCalibInfo->GetResolutionHeight();
-    VIVELOG( Log, TEXT( "Queuing render command to generate distortion correction map of size: (%d, %d)." ), 
-        settings->OutputMapResolution.X, settings->OutputMapResolution.Y );
-
     ENQUEUE_RENDER_COMMAND( GenerateDistortionCorrectionMap )(
-        [outputMapPath, settings, InFocalLength, srcResX, srcResY]( FRHICommandListImmediate& RHICmdList ){
-            GenerateDistortionCorrectionMapRenderThread( &RHICmdList, settings, InFocalLength, srcResX, srcResY, outputMapPath );
+        [outputMapPath, settings, InFocalLength]( FRHICommandListImmediate& RHICmdList ){
+            GenerateDistortionCorrectionMapRenderThread( &RHICmdList, settings, InFocalLength, outputMapPath );
         }
     );
 }
 
 void UViveCameraCalibrationHelper::GenerateDistortionCorrectionMapRenderThread( FRHICommandListImmediate* InRHICmdList, const UViveDeveloperSettings* InSettings, 
-    float InFocalLength, int32 InSrcResolutionX, int32 InSrcResolutionY, const FString& InCorrectionFilePath )
+    float InFocalLength, const FString& InCorrectionFilePath )
 {
     auto rect   = FIntRect( 0, 0, InSettings->OutputMapResolution.X, InSettings->OutputMapResolution.Y );
     auto width  = InSettings->OutputMapResolution.X;
     auto height = InSettings->OutputMapResolution.Y;
+    VIVELOG( Log, TEXT( "Queuing render command to generate distortion correction map of size: (%d, %d)." ), 
+        width, height );
 
     FTexture2DRHIRef distortionCorrectionRT;
     FRHIResourceCreateInfo createInfo;
@@ -191,7 +188,7 @@ bool UViveCameraCalibrationHelper::GetDistortionCorrectionMap( UTexture2D*& OutT
 bool UViveCameraCalibrationHelper::WriteTransformToFile( const FRotator& InRotation, const FVector& InLocation, const FString& InFilename )
 {
     auto settings = FViveUtilitiesHelper::GetSettings();
-    const auto backupOutputPath = FViveUtilitiesHelper::GenerateCameraTransformCalibDataOutputPath( settings->OutputCalibDirName );
+    const auto backupOutputPath = FViveUtilitiesHelper::GenerateVideoCameraCalibOutputPath( settings->OutputCalibDirName );
     FString outputPath;
     if ( FViveUtilitiesHelper::ValidateFilePath( outputPath, backupOutputPath, InFilename, TEXT( "txt" ) ) ) {
         auto fileContent = FString::Printf( TEXT( "[BEGIN SAVE VIVESTUDIOSUTILS DATA]\n\rRotation: [%s]\n\rLocation: [%s]\n\r[END SAVE VIVESTUDIOSUTILS DATA]" ), 

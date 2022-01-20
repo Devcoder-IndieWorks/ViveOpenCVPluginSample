@@ -5,6 +5,9 @@
 #include "ViveUtilitiesHelper.h"
 #include "ViveLog.h"
 
+DEFINE_STAT(STAT_ViveOpenCV_ProcessFrame);
+DEFINE_STAT(STAT_ViveOpenCV_CornerSubPixel);
+
 UViveCameraCalibrator::UViveCameraCalibrator( const FObjectInitializer& ObjectInitializer )
     : Super( ObjectInitializer )
 {
@@ -95,6 +98,7 @@ const FViveVideoCameraProperties& UViveCameraCalibrator::GetVideoCameraPropertie
 
 bool UViveCameraCalibrator::ProcessFrame( cv::Mat& InOutFrame, const FString& InModeType, float InTimeNow, UViveVideoDriver* InDriver )
 {
+    SCOPE_CYCLE_COUNTER( STAT_ViveOpenCV_ProcessFrame );
     if ( InModeType.Equals( TEXT( "Capturing" ) ) ) {
         cv::Mat grayFrame;
         cv::cvtColor( InOutFrame, grayFrame, cv::COLOR_RGB2GRAY );
@@ -104,6 +108,7 @@ bool UViveCameraCalibrator::ProcessFrame( cv::Mat& InOutFrame, const FString& In
         int32 chessboardFlags = cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE | cv::CALIB_CB_FAST_CHECK;
         bool found = cv::findChessboardCorners( grayFrame, PatternSize, newCalibPoints, chessboardFlags );
         if ( found ) {
+            SCOPE_CYCLE_COUNTER( STAT_ViveOpenCV_CornerSubPixel );
             cv::cornerSubPix( grayFrame, newCalibPoints, WinSize, cv::Size( -1, -1 ), 
                 cv::TermCriteria( cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 30, 0.0001f) );
 	    
@@ -194,10 +199,21 @@ void UViveCameraCalibrator::EstimatePoseSingleMarker( cv::Mat& InOutFrame )
 
 void UViveCameraCalibrator::SavePoseCalibToFile( const FString& InFilename )
 {
-    CameraProperties.SavePoseCalibToFile( InFilename, Resolution );
+    auto res = Resolution;
+    auto rot = CameraProperties.RotVec;
+    auto trans = CameraProperties.TranVec;
+    auto fov = CameraProperties.FOV;
+    auto focalLength = CameraProperties.FocalLength;
+    auto aspect = CameraProperties.AspectRatio;
+
+    AsyncTask( ENamedThreads::GameThread, [InFilename, res, rot, trans, fov, focalLength, aspect]{
+        FViveVideoCameraProperties::SavePoseCalibToFile( InFilename, res, rot, trans, fov, focalLength, aspect );
+    } );
 }
 
 void UViveCameraCalibrator::SaveLensCalibToFile( const FString& InFilename )
 {
-    CameraProperties.SaveLensCalibToFile( InFilename, ZoomRange );
+    AsyncTask( ENamedThreads::GameThread, [this, InFilename]{
+        CameraProperties.SaveLensCalibToFile( InFilename, ZoomRange );
+    } );
 }

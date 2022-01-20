@@ -29,6 +29,7 @@ public class ViveOpenCVPlugin : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"EngineSettings",
+                "DeveloperSettings",
 				"RenderCore",
 				"RHI",
 				"Projects",

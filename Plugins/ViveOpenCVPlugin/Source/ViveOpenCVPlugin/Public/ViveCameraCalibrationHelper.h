@@ -44,8 +44,7 @@ public:
 
 private:
     static void GenerateDistortionCorrectionMapRenderThread( class FRHICommandListImmediate* InRHICmdList, 
-        const class UViveDeveloperSettings* InSettings, float InFocalLength, int32 InSrcResolutionX, int32 InSrcResolutionY, 
-        const FString& InCorrectionFilePath );
+        const class UViveDeveloperSettings* InSettings, float InFocalLength, const FString& InCorrectionFilePath );
 
 private:
     static class FViveCameraCalibInfo* CameraCalibInfo;

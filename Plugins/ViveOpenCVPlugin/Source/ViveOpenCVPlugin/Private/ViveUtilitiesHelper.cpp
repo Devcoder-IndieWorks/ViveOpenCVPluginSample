@@ -70,11 +70,6 @@ bool FViveUtilitiesHelper::CreateTexture2D( void* InPixelData, int32 InWidth, in
 
 //-----------------------------------------------------------------------------
 
-FString FViveUtilitiesHelper::GenerateCameraTransformCalibDataOutputPath( const FString& InSubFolder )
-{
-    return FPaths::ConvertRelativePathToFull( FPaths::Combine( FPaths::ProjectSavedDir(), InSubFolder ) );
-}
-
 FString FViveUtilitiesHelper::GenerateVideoCameraCalibOutputPath( const FString& InSubFolder )
 {
     return FPaths::ConvertRelativePathToFull( FPaths::Combine( FPaths::ProjectSavedDir(), InSubFolder ) );

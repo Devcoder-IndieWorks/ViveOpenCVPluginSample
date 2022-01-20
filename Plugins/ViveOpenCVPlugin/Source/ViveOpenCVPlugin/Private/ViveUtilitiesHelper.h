@@ -11,7 +11,6 @@ public:
 
     //-------------------------------------------------------------------------
 
-    static FString GenerateCameraTransformCalibDataOutputPath( const FString& InSubFolder );
     static FString GenerateVideoCameraCalibOutputPath( const FString& InSubFolder );
 
     //-------------------------------------------------------------------------

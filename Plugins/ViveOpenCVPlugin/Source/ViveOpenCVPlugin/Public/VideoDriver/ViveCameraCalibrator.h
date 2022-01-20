@@ -2,7 +2,11 @@
 #pragma once
 #include "VideoSource/ViveVideoCameraProperties.h"
 #include "UObject/Object.h"
+#include "ViveOpenCVPluginModule.h"
 #include "ViveCameraCalibrator.generated.h"
+
+DECLARE_CYCLE_STAT_EXTERN( TEXT( "ViveOpenCV-ProcessFrame" ), STAT_ViveOpenCV_ProcessFrame, STATGROUP_ViveOpenCV, VIVEOPENCVPLUGIN_API );
+DECLARE_CYCLE_STAT_EXTERN( TEXT( "ViveOpenCV-Corner sub pixel" ), STAT_ViveOpenCV_CornerSubPixel, STATGROUP_ViveOpenCV, VIVEOPENCVPLUGIN_API );
 
 UCLASS()
 class VIVEOPENCVPLUGIN_API UViveCameraCalibrator : public UObject

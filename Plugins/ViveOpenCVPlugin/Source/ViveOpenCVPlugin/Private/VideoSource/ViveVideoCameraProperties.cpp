@@ -1,6 +1,7 @@
 #include "VideoSource/ViveVideoCameraProperties.h"
 #include "ViveStudiosUtilsPCH.h"
 #include "ViveUtilitiesHelper.h"
+#include "ViveDeveloperSettings.h"
 #include "ViveLog.h"
 
 void FViveVideoCameraProperties::PerformCalibMatrixValues( const FIntPoint& InResolution, const FIntPoint& InFrameSize, const FVector2D& InSensorSize )
@@ -68,7 +69,8 @@ void FViveVideoCameraProperties::StoreLensCalibInfo( float InZoomMin, float InZo
     VIVELOG( Log, TEXT( "============================================================================" ) );
 }
 
-void FViveVideoCameraProperties::SavePoseCalibToFile( const FString& InFilename, const FIntPoint& InResolution )
+bool FViveVideoCameraProperties::SavePoseCalibToFile( const FString& InFilename, const FIntPoint& InResolution, cv::Vec3d InRot, cv::Vec3d InTrans,
+    FVector2D InFOV, double InFocalLength, double InAspectRatio )
 {
     // Declaration const variables.
     const cv::Mat_<double> REBASE_CV_TO_UE = 
@@ -81,13 +83,13 @@ void FViveVideoCameraProperties::SavePoseCalibToFile( const FString& InFilename,
 
     // Convert OpenCV to Unreal.
     cv::Mat_<double> rotMat;
-    cv::Rodrigues( RotVec, rotMat );
+    cv::Rodrigues( InRot, rotMat );
     cv::Mat_<double> invRot( rotMat.t() );
 
-    cv::Mat_<double> locMat;
-    locMat.at<double>(0, 0) = TranVec[0];
-    locMat.at<double>(1, 0) = TranVec[1];
-    locMat.at<double>(2, 0) = TranVec[2];
+    cv::Mat_<double> locMat(3, 1);
+    locMat.at<double>(0, 0) = InTrans[0];
+    locMat.at<double>(1, 0) = InTrans[1];
+    locMat.at<double>(2, 0) = InTrans[2];
 
     cv::Mat_<double> negInvRot = (-1.0 * invRot);
     cv::Mat locCVToUE = REBASE_CV_TO_UE * (negInvRot * locMat);
@@ -100,14 +102,15 @@ void FViveVideoCameraProperties::SavePoseCalibToFile( const FString& InFilename,
         locCVToUE.at<double>(0, 0), locCVToUE.at<double>(1, 0), locCVToUE.at<double>(2, 0) );
 
     // Save the calibration data.
-    const auto backupOutputPath = FViveUtilitiesHelper::GenerateVideoCameraCalibOutputPath( TEXT( "CalibrationInfo" ) );
+    auto settings = FViveUtilitiesHelper::GetSettings();
+    const auto backupOutputPath = FViveUtilitiesHelper::GenerateVideoCameraCalibOutputPath( settings->OutputCalibDirName );
     FString outputPath;
     if ( FViveUtilitiesHelper::ValidateFilePath( outputPath, backupOutputPath, InFilename, TEXT( "txt" ), false ) ) {
         VIVELOG( Log, TEXT( "#### Save camera pose calibration data. ####" ) );
 
         auto calibData = FString::Printf( TEXT( "FocalLength:%f\n\rFovX:%f\n\rFovY:%f\n\rAspectRatio:%f\n\r"
             "Location:%f,%f,%f\n\rRotation:%f,%f,%f,%f,%f,%f,%f,%f,%f\n\rResolution:%d,%d\n\r" ), 
-            FocalLength, FOV.X, FOV.Y, AspectRatio, 
+            InFocalLength, InFOV.X, InFOV.Y, InAspectRatio, 
             locCVToUE.at<double>(0, 0), locCVToUE.at<double>(1, 0), locCVToUE.at<double>(2, 0), 
             rotCVToUE.at<double>(0, 0), rotCVToUE.at<double>(0, 1), rotCVToUE.at<double>(0, 2), 
             rotCVToUE.at<double>(1, 0), rotCVToUE.at<double>(1, 1), rotCVToUE.at<double>(1, 2), 
@@ -117,13 +120,17 @@ void FViveVideoCameraProperties::SavePoseCalibToFile( const FString& InFilename,
         auto successed = FViveUtilitiesHelper::WriteTextFile( outputPath, calibData );
 
         CVIVELOG( successed, Log, TEXT( "#### Success save file. camera pose calibration data ####\n\r%s" ), *calibData );
+        return successed;
     }
+
+    return false;
 }
 
 void FViveVideoCameraProperties::SaveLensCalibToFile( const FString& InFilename, const FVector2D& InZoomRange )
 {
     // Save the calibration data.
-    const auto backupOutputPath = FViveUtilitiesHelper::GenerateVideoCameraCalibOutputPath( TEXT( "CalibrationInfo" ) );
+    auto settings = FViveUtilitiesHelper::GetSettings();
+    const auto backupOutputPath = FViveUtilitiesHelper::GenerateVideoCameraCalibOutputPath( settings->OutputCalibDirName );
     FString outputPath;
     if ( FViveUtilitiesHelper::ValidateFilePath( outputPath, backupOutputPath, InFilename, TEXT( "txt" ), false ) ) {
         VIVELOG( Log, TEXT( "#### Save camera lens calibration data. ####" ) );
