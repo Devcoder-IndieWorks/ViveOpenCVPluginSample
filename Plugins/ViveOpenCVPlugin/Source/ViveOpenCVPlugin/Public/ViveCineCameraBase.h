@@ -37,4 +37,6 @@ private:
     FVector ExternalLocation;
     UPROPERTY( EditAnywhere, Category="ViveCineCameraBase|ExternalInputParams", meta=(AllowPrivateAccess="true") )
     FRotator ExternalRotation;
+    UPROPERTY( EditAnywhere, Category="ViveCineCameraBase|ExternalInputParams", meta=(AllowPrivateAccess="true") )
+    FString CalibPoseOutputFileName;
 };

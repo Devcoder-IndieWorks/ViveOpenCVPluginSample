@@ -24,6 +24,9 @@ public:
     UFUNCTION( BlueprintCallable, Category="ViveOpenCVPlugin|CameraCalibrator" )
     static bool GetCameraAspectRatio( float& OutAspectRatio );
 
+    UFUNCTION( BlueprintCallable, Category="ViveOpenCVPlugin|CameraCalibrator" )
+    static bool LoadCameraCalibInfo( const FString& InFilename );
+
     //-------------------------------------------------------------------------
 
     UFUNCTION( BlueprintCallable, Category="ViveOpenCVPlugin|CameraCalibrator" )
@@ -31,6 +34,9 @@ public:
 
     UFUNCTION( BlueprintCallable, Category="ViveOpenCVPlugin|CameraCalibrator" )
     static bool GetDistortionCorrectionMap( UTexture2D*& OutTexture );
+
+    UFUNCTION( BlueprintCallable, Category="ViveOpenCVPlugin|CameraCalibration" )
+    static bool LoadLensCalibInfo( const FString& InFilename );
 
     //-------------------------------------------------------------------------
 

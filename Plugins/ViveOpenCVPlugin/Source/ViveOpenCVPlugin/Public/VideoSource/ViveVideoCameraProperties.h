@@ -11,8 +11,6 @@ public:
     void PerformCalibMatrixValues( const FIntPoint& InResolution, const FIntPoint& InFrameSize, const FVector2D& InSensorSize );
     void StoreLensCalibInfo( float InZoomMin, float InZoomMax, const FVector2D& InSensorSize );
 
-    void SaveLensCalibToFile( const FString& InFilename, const FVector2D& InZoomRange );
-
 public:
     // Estimate lens.
     struct LensCalibInfo
@@ -28,7 +26,7 @@ public:
 public:
     static bool SavePoseCalibToFile( const FString& InFilename, const FIntPoint& InResolution, cv::Vec3d InRot, cv::Vec3d InTrans, 
         FVector2D InFOV, double InFocalLength, double InAspectRatio );
-    static bool SaveLensCalibToFile( const FString& InFilename, const FVector2D& InZoomRange );
+    static bool SaveLensCalibToFile( const FString& InFilename, const FVector2D& InZoomRange, TArray<LensCalibInfo> InLensCalibInfo );
 
 private:
     void RecalculateMatrix( const FIntPoint& InResolution, const FIntPoint& InFrameSize, cv::Mat& OutMatrix );

@@ -73,6 +73,20 @@ bool UViveCameraCalibrationHelper::GetCameraAspectRatio( float& OutAspectRatio )
     return false;
 }
 
+bool UViveCameraCalibrationHelper::LoadCameraCalibInfo( const FString& InFilename )
+{
+    auto settings = FViveUtilitiesHelper::GetSettings();
+    const auto backupOutputPath = FViveUtilitiesHelper::GenerateVideoCameraCalibOutputPath( settings->OutputCalibDirName );
+    FString filePath;
+    if ( FViveUtilitiesHelper::ValidateFilePath( filePath, backupOutputPath, InFilename, TEXT( "txt" ), false ) ) {
+        VIVELOG( Log, TEXT( "#### Load camera calibration infomation from Save data. ####" ) );
+        CameraCalibInfo->ReadFromFile( filePath );
+        return true;
+    }
+
+    return false;
+}
+
 //-----------------------------------------------------------------------------
 
 void UViveCameraCalibrationHelper::GenerateDistortionCorrectionMap( float InFocalLength )
@@ -178,6 +192,20 @@ bool UViveCameraCalibrationHelper::GetDistortionCorrectionMap( UTexture2D*& OutT
         auto settings = FViveUtilitiesHelper::GetSettings();
         return FViveUtilitiesHelper::CreateTexture2D( LensCalibInfo->PixelData.GetData(), 
             settings->OutputMapResolution.X, settings->OutputMapResolution.Y, false, true, OutTexture, EPixelFormat::PF_FloatRGBA );
+    }
+
+    return false;
+}
+
+bool UViveCameraCalibrationHelper::LoadLensCalibInfo( const FString& InFilename )
+{
+    auto settings = FViveUtilitiesHelper::GetSettings();
+    const auto backupOutputPath = FViveUtilitiesHelper::GenerateVideoCameraCalibOutputPath( settings->OutputCalibDirName );
+    FString filePath;
+    if ( FViveUtilitiesHelper::ValidateFilePath( filePath, backupOutputPath, InFilename, TEXT( "txt" ), false ) ) {
+        VIVELOG( Log, TEXT( "#### Load lens calibration infomation from Save data. ####" ) );
+        LensCalibInfo->ReadFromFile( filePath );
+        return true;
     }
 
     return false;

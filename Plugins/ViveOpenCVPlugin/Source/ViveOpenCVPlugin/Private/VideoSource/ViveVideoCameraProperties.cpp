@@ -126,7 +126,7 @@ bool FViveVideoCameraProperties::SavePoseCalibToFile( const FString& InFilename,
     return false;
 }
 
-void FViveVideoCameraProperties::SaveLensCalibToFile( const FString& InFilename, const FVector2D& InZoomRange )
+bool FViveVideoCameraProperties::SaveLensCalibToFile( const FString& InFilename, const FVector2D& InZoomRange, TArray<LensCalibInfo> InLensCalibInfos )
 {
     // Save the calibration data.
     auto settings = FViveUtilitiesHelper::GetSettings();
@@ -136,8 +136,8 @@ void FViveVideoCameraProperties::SaveLensCalibToFile( const FString& InFilename,
         VIVELOG( Log, TEXT( "#### Save camera lens calibration data. ####" ) );
 
         auto calibData = FString::Printf( TEXT( "MinFocalLength:%f\n\rMaxFocalLength:%f\n\rResultNum:%d\n\r" ), 
-            InZoomRange.X, InZoomRange.Y, LensCalibInfos.Num() );
-        for ( auto& info : LensCalibInfos ) {
+            InZoomRange.X, InZoomRange.Y, InLensCalibInfos.Num() );
+        for ( auto& info : InLensCalibInfos ) {
             auto infoContent = FString::Printf( TEXT( "ZoomLevel:%f\n\rPrincipalPoint:%f,%f\n\r"
                 "DistortionCoefficients(K1, K2, P1, P2, K3):%f,%f,%f,%f,%f\n\r" ), 
                 info.ZoomLevel, info.PrincipalPoint.x, info.PrincipalPoint.y, 
@@ -149,5 +149,8 @@ void FViveVideoCameraProperties::SaveLensCalibToFile( const FString& InFilename,
         auto successed = FViveUtilitiesHelper::WriteTextFile( outputPath, calibData );
 
         CVIVELOG( successed, Log, TEXT( "#### Success save file. camera lens calibration data ####\n\r%s" ), *calibData );
+        return successed;
     }
+
+    return false;
 }

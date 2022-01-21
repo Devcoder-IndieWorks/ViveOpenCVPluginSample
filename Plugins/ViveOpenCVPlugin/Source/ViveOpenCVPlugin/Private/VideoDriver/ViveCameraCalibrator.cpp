@@ -213,7 +213,10 @@ void UViveCameraCalibrator::SavePoseCalibToFile( const FString& InFilename )
 
 void UViveCameraCalibrator::SaveLensCalibToFile( const FString& InFilename )
 {
-    AsyncTask( ENamedThreads::GameThread, [this, InFilename]{
-        CameraProperties.SaveLensCalibToFile( InFilename, ZoomRange );
+    auto lensCalibInfos = CameraProperties.LensCalibInfos;
+    auto zoomRange = ZoomRange;
+
+    AsyncTask( ENamedThreads::GameThread, [InFilename, zoomRange, lensCalibInfos]{
+        FViveVideoCameraProperties::SaveLensCalibToFile( InFilename, zoomRange, lensCalibInfos );
     } );
 }

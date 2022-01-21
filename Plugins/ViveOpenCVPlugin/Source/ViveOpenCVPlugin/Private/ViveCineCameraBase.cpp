@@ -23,10 +23,12 @@ void AViveCineCameraBase::BeginPlay()
 
 void AViveCineCameraBase::SetupTransform()
 {
-    FTransform newTransform;
-    if ( UViveCameraCalibrationHelper::GetCalibratedViewTransform( newTransform ) ) {
-        SetActorTransform( newTransform );
-        VIVELOG( Log, TEXT( "Setup new transform." ) );
+    if ( UViveCameraCalibrationHelper::LoadCameraCalibInfo( CalibPoseOutputFileName ) ) {
+        FTransform newTransform;
+        if ( UViveCameraCalibrationHelper::GetCalibratedViewTransform( newTransform ) ) {
+            SetActorTransform( newTransform );
+            VIVELOG( Log, TEXT( "Setup new transform." ) );
+        }
     }
 }
 
