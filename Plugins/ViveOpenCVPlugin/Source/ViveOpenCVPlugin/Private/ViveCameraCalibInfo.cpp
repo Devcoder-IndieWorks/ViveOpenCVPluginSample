@@ -10,7 +10,7 @@ void FViveCameraCalibInfo::ReadFromFile( const FString& InFilename )
     FFileHelper::LoadFileToString( fileData, *InFilename );
 
     TArray<FString> lines;
-    fileData.ParseIntoArray( lines, TEXT( "\r\n" ), true );
+    fileData.ParseIntoArray( lines, TEXT( "\n\r" ), true );
 
     for ( auto line : lines ) {
         TArray<FString> infoData;
