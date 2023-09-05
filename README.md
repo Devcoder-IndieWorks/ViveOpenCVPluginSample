@@ -75,3 +75,259 @@ Out Transform: 계산된 가상 카메라 엑터의 Transform
 Return Value: 정상적으로 계산되어 가상 카메라의 Transform 값을 얻었는지 여부.
 
 ![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림11.png)
+
+
+
+OpenCV를 통해 구한 Camera Calibration Information 데이터로 Unreal Engine 가상 카메라(예: ACineCameraActor)의 Focal Length를 계산해 주는 Function Node.
+
+Out Focal Length: 계산된 가상 카메라의 Focal Length 값.
+
+Return Value: Focal Length 값을 얻었는지 여부.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림12.png)
+
+
+
+사용 중인 실제 카메라의 종횡비(Aspect Ratio)를 구하는 Function Node.
+
+Out Aspect Ratio: 실제 카메라 종횡비 값.
+
+Return Value: 실제 카메라 종횡비를 얻었는지 여부.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림13.png)
+
+
+
+OpenCV를 통해 구한 Camera Calibration Information 데이터로 Unreal Engine 가상 카메라의 X축 방향 Field Of View 값을 구하는 Function Node.
+
+Out Fov X: X축 방향 Field Of View 값.
+
+Return Value: X축 방향 Field Of View 값을 얻었는지 여부.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림14.png)
+
+
+
+OpenCV를 통해 구한 Camera Calibration Information 데이터로 Unreal Engine 가상 카메라의 Y축 방향 Field Of View 값을 구하는 Function Node.
+
+Out Fov Y: Y축 방향 Field Of View 값.
+
+Return Value: Y축 방향 Field Of View 값을 얻었는지 여부.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림15.png)
+
+
+
+#### Vive Camera Tracker Helper
+
+**참고: ViveVR Tracker는 ViveVR 로고가 보이는 면이 가리키는 방향이 Forward 방향이고, 전원 램프가 있는 방향이 Up이 됨.**
+
+**밑에 구현한 Function Node들은 ViveVR Tracker가 ViveVR 로고가 보이는 면이 가리키는 방향이 Up, 전원 램프가 있는 방향을 Forward가 되게 설치한 상태로 구현 함.**
+
+
+
+ViveVR Tracker의 회전 값을 Unreal Engine의 회전 값으로 변환하는 Function Node.
+
+In Rotation: ViveVR Tracker의 회전 값.
+
+Out Rotation: Unreal Engine에서 사용 가능하도록 변환된 회전 값.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림16.png)
+
+
+
+ViveVR Tracker의 이동 값을 Unreal Engine의 이동 값으로 변환하는 Function Node.
+
+In Location: ViveVR Tracker의 이동 값.
+
+Out Location: Unreal Engine에서 사용 가능하도록 변환된 이동 값.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림17.png)
+
+
+
+ViveVR Tracker의 회전된 값과 Unreal Engine 가상 카메라의 회전된 값의 차이를 구하는 Function Node.
+
+In Rotation A: Unreal Engine 가상 카메라 엑터의 현재 회전된 값.
+
+In Rotation B: ViveVR Tracker의 현재 회전된 값.
+
+Return Value: 두 회전 값의 차이 값.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림18.png)
+
+
+
+ViveVR Tracker의 이동된 값과 Unreal Engine 가상 카메라의 이동된 값의 차이를 구하는 Function Node.
+
+In Location A: Unreal Engine 가상 카메라 엑터의 현재 이동된 값.
+
+In Location B: ViveVR Tracker의 현재 이동된 값.
+
+Return Value: 두 이동 값의 차이 값.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림19.png)
+
+
+
+초기 시점에 구해진 회전 Offset 값과 현재 ViveVR Tracker 회전 값이 합쳐진 회전 값을 구하는 Function Node.
+
+In Rotation: ViveVR Tracker의 현재 회전 값.
+
+In Offset: Compute Rotation Offset으로 구한 Offset 회전 값.
+
+Return Value: 두 회전 값이 합쳐진 회전 값.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림20.png)
+
+
+
+초기 시점에 구해진 이동 Offset 값과 현재 ViveVR Tracker 이동 값이 합쳐진 이동 값을 구하는 Function Node.
+
+In Location: ViveVR Tracker의 현재 이동 값.
+
+In Offset: Compte Location Offset으로 구한 Offset 이동 값.
+
+Return Value: 두 이동 값이 합쳐진 이동 값.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림21.png)
+
+
+
+#### Utility Function Node 사용예
+
+##### Camera Calibration 설정 예제
+
+Unreal Engine 가상 카메라 엑터 초기 설정(BeginPlay 이벤트)에서 Camera Calibration View Transform을 얻어와 가상 카메라 엑터의 Transform으로 설정 한다.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림22.png)
+
+
+
+Unreal Engine 가상 카메라 엑터 초기 설정(BeginPlay 이벤트)에서 가상 카메라의 Field Of View를 설정 한다.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림23.png)
+
+
+
+설정된 Unreal Engine 가상 카메라 엑터를 View Target으로 설정 한다.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림24.png)
+
+
+
+##### ViveVR Tracker와 Unreal Engine 가상 카메라 엑터간 Transform 관계 설정
+
+ViveVR Tracker ID 얻기
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림25.png)
+
+
+
+ViveVR Tracker의 Position과 Orientation 값 얻기.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림26.png)
+
+
+
+ViveVR Tracker의 Offset 이동 값 얻기
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림27.png)
+
+
+
+ViveVR Tracker의 Offset 회전 값 얻기.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림28.png)
+
+
+
+매 프레임 ViveVR Tracker의 이동 값과 회전 값을 Unreal Engine 가상 카메라 엑터에 적용 하기.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림29.png)
+
+
+
+## 구현 내용
+
+OpenCV API를 활용하여 Unreal Engine의 Camera Actor의 위치를 설정하는 기능에 대한 구현 내용을 정리한다.
+
+ViveOpenCV 플러그인의 메인이 되는 코드는 UViveOpenCVDriver::FWorkerRunnable::Run() 함수이다. OpenCV API로 카메라가 촬영한 영상 데이터를 처리할 때 처리 시간이 다소 소요된다. 대부분 OpenCV API 함수들이 블로킹 함수들로써 함수를 실행하게 되면 함수가 종료되기전에는 다른 처리를 할 수가 없다.
+
+그래서 Unreal Engine의 Thread System을 이용하여 OpenCV API가 영상 데이터를 처리 하는 부분을 병렬 처리 될 수 있도록 구현 하였다.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림30.png)
+
+[그림1] UViveOpenCVDriver::FWorkerRunnable::Run() 함수 도입 부분
+
+
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림31.png)
+
+[그림2] UViveOpenCVDriver::FWorkerRunnable::Run() 함수 중간 부분
+
+
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림32.png)
+
+[그림3]UViveOpenCVDriver::FWorkerRunnable::Run() 함수 끝 부분
+
+
+
+위 코드를 보면 루프문 초기에 OpenCV를 사용하여 카메라 제어를 위한 초기 설정을 하고 설정이 끝나면 Chessboard 이미지를 사용하여 실제 카메라 Calibration을 진행하게 된다.
+
+카메라 Calibration이 끝나게 되면 Marker 이미지를 사용하여 실제 카메라가 위치한 지점을 계산한다.
+
+이러한 과정에서 촬용되는 영상 이미지를 Unreal Engine으로 전달하는 코드가 그림3에서 ParallelFor() 함수를 이용하여 전달하기 위한 이미지 버퍼에 픽셀 데이터를 옮기고 있으며, StoreWorkerFrame() 함수를 통해 Unreal Engine으로 전달된다.
+
+그림2에서 calibrator->ProcessFrame() 함수에서 OpenCV API로 카메라 Calibration을 하기 위해 Chessboard 코너 검출을 하고 여러 위치에서의 Chessboard 코너 검출 데이터를 수집하여 수집된 데이터로 카메라 Calibration을 하게 된다.
+
+그림4에서 빨간 박스 부분이 Chessboard 코너를 검출하여 수집하는 부분이다.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림33.png)
+
+[그림4] UViveCameraCalibrator::ProcessFrame() 함수
+
+
+
+수집된 Chessboard 코너 검출 데이터들을 가지고 실제 카메라 Calibration 처리를 담당하는 함수를 호출하는 부분이 그림5에서 빨간색 박스 부분이다.
+
+노란색 박스 부분은 정해진 갯수만큼의 Chessboard 코너 검출 데이터가 수집되지 않았었음 화면에 알려주는 코드이다.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림34.png)
+
+[그림5] UViveCameraCalibrator::ProcessFrame() 함수
+
+
+
+카메라 Calibration 처리를 하는 부분은 그림6과 같다.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림35.png)
+
+[그림6] UViveCameraCalibrator::CalculateCalibration() 함수
+
+
+
+카메라 Calibration 정보를 가지고 실제 카메라 위치를 계산하기 위해서는 Marker 이미지를 사용한다. Calibartion 정보를 입력 값으로 하고 Marker 이미지 영상을 분석해서 실제 카메라 위치를 계산한다.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림36.png)
+
+[그림7] UViveCameraCalibrator::EstimatePoseSingleMarker() 함수
+
+
+
+계산된 실제 카메라 위치는 OpenCV 좌표 시스템 기반이기 때문에 Unreal Engine에서 바로 사용할 수가 없다. 그래서 OpenCV 좌표 시스템에서 Unreal Engine 좌표 시스템으로 변환하여 외부 파일로 저장 한다.
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림37.png)
+
+[그림8] FViveVideoCameraProperties::SavePoseCalibToFile() 함수 도입 부분
+
+
+
+![](https://github.com/Devcoder-IndieWorks/ViveOpenCVPluginSample/blob/master/Images/그림38.png)
+
+[그림9] FViveVideoCameraProperties::SavePoseCalibToFile() 함수 끝 부분
+
+
+
+저장되는 파일은 텍스트 기반 파일로 속성 ID와 속성 값으로 구성되어 있다.
